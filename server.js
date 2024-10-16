@@ -1,46 +1,52 @@
 import express from 'express';
-
 const app = express();
 
 app.use(express.json());
 const PORT = 3000;
-app.listen(PORT, () => {
-  console.log(`Server is running in http://localhost:${PORT}`);
-});
 
-let books = [
-  { id: 1, title: '1894', author: 'George Orwell' },
-  { id: 2, title: 'The Hobbit', author: 'J.R.R Tolkien' },
+app.listen(PORT, () => {
+  console.log(`Server is running as ${PORT}`);
+});
+let users = [
+  { id: 1, name: 'Yui Jensen' },
+  { id: 2, name: 'Michel Jensen' },
+  { id: 3, name: 'Mayu Yokote' },
 ];
 
-app.get('/books', (req, res) => {
-  //logic
-  res.json(books);
+//*GET
+app.get('/users', (req, res) => {
+  res.json(users);
 });
 
-app.post('/books', (req, res) => {
-  const newBook = {
-    id: books.length + 1,
-    title: req.body.title,
-    author: req.body.author,
+//*POST
+app.post('/users', (req, res) => {
+  const newUser = {
+    id: users.length + 1,
+    name: req.body.name,
   };
-  books.push(newBook);
-  res.json({ message: 'Book added successfully!', book: newBook });
+  res.json({ message: 'Adding new name', newUser });
+  users.push(newUser);
 });
 
-app.put('/books/:id', (req, res) => {
-  const bookId = parseInt(req.params.id);
-  const book = books.find((b) => b.id === bookId);
-  if (!book) {
-    return res.status(404).json({ message: 'Oops, book not found!' });
+//*PUT
+app.put('/users/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+  const user = users.find((item) => item.id === id);
+  if (user) {
+    user.name = req.body.name;
+    res.json({ message: 'User updated', user });
   }
-  book.title = req.body.title || book.title;
-  book.author = req.body.author || book.author;
-  res.json({ message: 'Book updated successfully', book });
+  res.status(404).json({ message: 'User not found!😢' });
 });
 
-app.delete('/books/:id', (req, res) => {
-  const bookId = parseInt(req.params.id);
-  books = books.filter((b) => b.id !== bookId);
-  res.json({ message: 'Book deleted successfully!' });
+//*DELETE
+app.delete('/users/:id', (req, res) => {
+  const deleteID = req.params.id;
+  const initialLength = users.length;
+  users = users.filter((item) => item.id !== deleteID);
+
+  if (initialLength > users.length) {
+    res.json({ message: 'Deleting item  💀', deleteID });
+  }
+  res.status(404).json({ message: 'Something error!' });
 });
