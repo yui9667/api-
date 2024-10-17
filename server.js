@@ -33,20 +33,20 @@ app.put('/users/:id', (req, res) => {
   const id = parseInt(req.params.id);
   const user = users.find((item) => item.id === id);
   if (user) {
-    user.name = req.body.name;
+    user.name = req.body.name || user.name;
+    user.id = req.body.id || user.id;
     res.json({ message: 'User updated', user });
-  }
-  res.status(404).json({ message: 'User not found!😢' });
+  } else res.status(404).json({ message: 'User not found!😢' });
 });
 
 //*DELETE
 app.delete('/users/:id', (req, res) => {
-  const deleteID = req.params.id;
-  const initialLength = users.length;
-  users = users.filter((item) => item.id !== deleteID);
-
-  if (initialLength > users.length) {
+  const deleteID = parseInt(req.params.id);
+  const findId = users.find((item) => item.id === deleteID);
+  if (findId) {
+    users = users.filter((item) => item.id !== deleteID);
     res.json({ message: 'Deleting item  💀', deleteID });
+  } else {
+    res.status(404).json({ message: 'User not found!' });
   }
-  res.status(404).json({ message: 'Something error!' });
 });
